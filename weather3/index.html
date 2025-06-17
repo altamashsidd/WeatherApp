@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <style>
+    * {
+      margin: 0;
+      font-family: Arial;
+      border: border-box;
+      font-family: ui-monospace;
+    }
+
+    .full {
+      background-image: url("/weather.jpg");
+      background-size: cover;
+    }
+
+    .bg-body-tertiary {
+      padding: 0px 0px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="full">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-body-tertiary bg-dark">
+      <div class="container-fluid bg-dark">
+        <a class="navbar-brand" href="#">Weather App</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">How To Use</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Places
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" onclick="handleClick('Delhi')">Delhi</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleClick('Seattle')">Seattle</a></li>
+                <li><a class="dropdown-item" href="#" onclick="handleClick('Bangalore')">Bangalore</a></li>
+              </ul>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <input id="city" form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" id="submit" onclick="handleSearch()">Search</button>
+            </form>
+          </div>
+        </div>
+    </nav>
+
+    <div class="container">
+      <h1 class="my-4 text-center ">Weather for <span id="cityName"></span></h1>
+      <main>
+        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+          <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm">
+              <div class="card-header py-3 text-bg-primary border-primary">
+                <h4 class="my-0 fw-normal">Temperatures</h4>
+              </div>
+              <div class="card-body">
+                <h1 class="card-title pricing-card-title"></h1><small class="text-body-secondary fw-light">°C</small>
+                </h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                  <li>Temperature is <span id="temp"></span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm">
+              <div class="card-header py-3 text-bg-primary border-primary">
+                <h4 class="my-0 fw-normal">Humidity Check</h4>
+              </div>
+              <div class="card-body">
+                <h1 class="card-title pricing-card-title"><small class="text-body-secondary fw-light">%</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                  <li>Cloud PCT is <span id="cloud_pct"></span></li>
+                  <li>Feels Like is <span id="feels_like"></span></li>
+                  <li>Humidity is <span id="humidity"></span></li>
+                </ul>
+
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="card mb-4 rounded-3 shadow-sm border-primary">
+              <div class="card-header py-3 text-bg-primary border-primary">
+                <h4 class="my-0 fw-normal">Wind Check</h4>
+              </div>
+              <div class="card-body">
+                <h1 class="card-title pricing-card-title"><small class="text-body-secondary fw-light">km/hr</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                  <li>Wind Speed is <span id="wind_speed"></span></li>
+                  <li>Wind Degree is <span id="wind_degrees"></span></li>
+                </ul>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="display-6 text-center mb-4 mbb-4">Some Other Places</h2>
+
+        <div class="table-responsive">
+          <table class="table text-center">
+            <thead>
+              <tr>
+                <th style="width: 34%;"></th>
+                <th style="width: 22%;">Cloud_pct</th>
+                <th style="width: 22%;">Feels_like</th>
+                <th style="width: 22%;">Humidity</th>
+                <th style="width: 22%;">Temp</th>
+                <th style="width: 22%;">Wind_degrees</th>
+                <th style="width: 22%;">Wind_speed</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"></script>
+    <script>
+
+      let mainCity = "Kolkata";
+
+      const getWeather = (city) => {
+        return fetch('http://api.weatherapi.com/v1/current.json?key=eefae6f07e124dec9cd70607252805&q=' + city)
+          .then(response => response.json())
+          .then((data) => data.current)
+          .catch(err => console.error(error));
+      }
+
+      const getOtherCitiesWeather = (cities) => {
+        for (const city of cities) {
+          getWeather(city)
+            .then((current) => {
+              tbody.innerHTML += `
+              <tr>
+                <th scope="row" class="text-start">${city}</th>
+                <td><span>${current.cloud}</span></td>
+                <td><span id="feels_likeD">${current.feelslike_c}</span></td>
+                <td><span id="humidityD">${current.humidity}</span></td>
+                <td><span id="tempD">${current.temp_c}</span></td>
+                <td><span id="wind_degreesD">${current.windchill_c}</span></td>
+                <td><span id="wind_speedD">${current.wind_kph}</span></td>
+              </tr>
+              `
+            })
+        }
+      }
+
+      getOtherCitiesWeather(["Kolkata", "Delhi", "Shimla", "Jaipur", "Lucknow"])
+
+      const getWeatherOfMainCity = () => {
+        getWeather(mainCity)
+          .then((current) => {
+            cityName.innerHTML = mainCity
+            cloud_pct.innerHTML = current.cloud
+            temp.innerHTML = current.temp_c
+            feels_like.innerHTML = current.feelslike_c
+            humidity.innerHTML = current.humidity
+            wind_speed.innerHTML = current.wind_kph
+            wind_degrees.innerHTML = current.windchill_c
+          })
+      }
+
+      getWeatherOfMainCity()
+
+      const handleSearch = (e) => {
+        mainCity = city.value
+        getWeatherOfMainCity()
+      }
+
+      const handleClick = (city) => {
+        mainCity = city
+        getWeatherOfMainCity()
+      }
+
+    </script>
+  </div>
+</body>
+
+</html>
